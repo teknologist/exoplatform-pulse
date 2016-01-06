@@ -19,21 +19,28 @@
 
 package org.exoplatform.addon.pulse.service.ws;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.TreeMap;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFFont;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
+import org.exoplatform.addon.pulse.service.activitystatistic.ActivityStatisticBean;
+import org.exoplatform.addon.pulse.service.activitystatistic.ActivityStatisticService;
+import org.exoplatform.commons.utils.ListAccess;
+import org.exoplatform.container.ExoContainer;
+import org.exoplatform.container.ExoContainerContext;
+import org.exoplatform.services.log.ExoLogger;
+import org.exoplatform.services.log.Log;
+import org.exoplatform.services.rest.impl.RuntimeDelegateImpl;
+import org.exoplatform.services.rest.resource.ResourceContainer;
+import org.exoplatform.social.core.identity.model.Identity;
+import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
+import org.exoplatform.social.core.manager.IdentityManager;
+import org.exoplatform.social.core.profile.ProfileFilter;
+import org.json.simple.JSONValue;
+import org.json.simple.parser.ParseException;
 
 import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.GET;
@@ -50,31 +57,21 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.ext.RuntimeDelegate;
-
-import org.apache.poi.hssf.usermodel.HSSFCell;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFFont;
-import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.hssf.usermodel.HSSFSheet;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor;
-
-import org.exoplatform.commons.utils.ListAccess;
-import org.exoplatform.addon.pulse.service.activitystatistic.ActivityStatisticBean;
-import org.exoplatform.addon.pulse.service.activitystatistic.ActivityStatisticService;
-import org.exoplatform.container.ExoContainer;
-import org.exoplatform.container.ExoContainerContext;
-import org.exoplatform.services.log.ExoLogger;
-import org.exoplatform.services.log.Log;
-import org.exoplatform.services.rest.impl.RuntimeDelegateImpl;
-import org.exoplatform.services.rest.resource.ResourceContainer;
-import org.exoplatform.social.core.identity.model.Identity;
-import org.exoplatform.social.core.identity.provider.OrganizationIdentityProvider;
-import org.exoplatform.social.core.manager.IdentityManager;
-import org.exoplatform.social.core.profile.ProfileFilter;
-
-import org.json.simple.JSONValue;
-import org.json.simple.parser.ParseException;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.TreeMap;
 
 @Path("activitystatistic")
 @Produces(MediaType.APPLICATION_JSON)
@@ -614,7 +611,7 @@ public class RestActivitiesStatistic implements ResourceContainer {
         String toDateStr =  partString(toDate, "yyyy-MM-dd");
         
         listTitle.add(partString(toDate, "dd-MM-yyyy"));
-        String url="http://sourceforge.net/projects/exo/files/stats/json?start_date="+toDateStr+"&end_date="+ toDateStr;
+        String url="https://sourceforge.net/projects/exo/files/stats/json?start_date="+toDateStr+"&end_date="+ toDateStr;
         try{
          String returnValue = httpGet(url);
          plfDownloadsData.add(getTotalPlfDownloadDataFromJson(returnValue,toDate));
@@ -656,7 +653,7 @@ public class RestActivitiesStatistic implements ResourceContainer {
       for(int i=0; i< totalDataCoulumn; i++){
         calendar.setTime(endWeekDate);
         listTitle.add("W" + calendar.get(Calendar.WEEK_OF_YEAR) + "-" + calendar.get(Calendar.YEAR));
-        String url="http://sourceforge.net/projects/exo/files/stats/json?start_date="+fromDateStr+"&end_date="+ toDateStr;
+        String url="https://sourceforge.net/projects/exo/files/stats/json?start_date="+fromDateStr+"&end_date="+ toDateStr;
         try{
          String returnValue = httpGet(url);
          plfDownloadsData.add(getTotalPlfDownloadDataFromJson(returnValue, parseDate(fromDateStr, "yyyy-MM-dd")));
@@ -712,7 +709,7 @@ public class RestActivitiesStatistic implements ResourceContainer {
       for(int i=0; i< totalDataCoulumn; i++){
         calendar.setTime(endMonthDate);
         listTitle.add(partString(calendar.getTime(), "MMM") + "-" + calendar.get(Calendar.YEAR));
-        String url="http://sourceforge.net/projects/exo/files/stats/json?start_date="+fromDateStr+"&end_date="+ toDateStr;
+        String url="https://sourceforge.net/projects/exo/files/stats/json?start_date="+fromDateStr+"&end_date="+ toDateStr;
         try{
          String returnValue = httpGet(url);
          plfDownloadsData.add(getTotalPlfDownloadDataFromJson(returnValue, parseDate(fromDateStr, "yyyy-MM-dd")));
